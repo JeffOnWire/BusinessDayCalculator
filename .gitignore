@@ -1,0 +1,7 @@
+build/
+private/
+node_modules/
+/.grunt/
+src/scripts/*.js
+austin-pta/src/*.js
+/.grunt
