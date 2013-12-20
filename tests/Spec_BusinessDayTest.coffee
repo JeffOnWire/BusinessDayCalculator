@@ -2,6 +2,251 @@
   Under source control. Please contact the OIG Applications Development team before modifying.
 ###
 
+describe("Schedule Processor Class", -> 
+  
+  beforeEach(->
+      
+  )
+  it("Throws an exception if there is no BusinessWeek definition", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          _BusinessWeek: {
+            Sunday: ""
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }   
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Definition requires a BusinessWeek.")  
+  )
+  
+  it("Throws an exception if there is an incorrect day in the BusinessWeek definition", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            sturdaySunday: ""
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: \"sturdaySunday\" is not a valid day of the week.")  
+  )
+  it("Throws an exception if hours are not formatted correctly", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "8:00 AM to 5:30 PM"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: \"8:00 AM to 5:30 PM\" is not a valid definition of hours for \"Sunday\".")  
+  )
+  it("Throws an exception if \"Holidays\" is not an array", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Holidays: "hello"
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Holidays must be an array.")  
+  )  
+  it("Throws an exception if \"Modifiers\" is not an array", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Modifiers: "hello"
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Modifiers must be an array.")  
+  )  
+  it("Throws an exception if \"Modifiers\" definitions are not arrays", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Modifiers: [20131219]
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Modifier definitions must be arrays.")  
+  )  
+  it("Throws an exception if \"Holiday\" definitions are not arrays", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Holidays: [20131219]
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Holiday definitions must be arrays.")  
+  )  
+  it("Throws an exception if \"Holiday\" definitions don't have a date value", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Holidays: [[]]
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Holiday definitions must have a date value.")  
+  )  
+  it("Throws an exception if \"Modifier\" definitions don't have a date value", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Modifiers: [[]]
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Modifier definitions must have a date value.")  
+  )  
+  it("Throws an exception if \"Modifier\" definitions don't have a properly formatted date value", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Modifiers: [[2013040404]]
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Modifier definition dates must be in the form yyyymmdd.")  
+  ) 
+  it("Throws an exception if \"Holiday\" definitions don't have a properly formatted date value", ->
+    
+    validateSchedule = ->
+      scheduleValidator = new ScheduleValidator()
+      scheduleValidator.validateSchedule(
+        {
+          BusinessWeek: {
+            Sunday: "0800-1730"
+            Monday: "0801-1730"
+            Tuesday: "0802-1730" 
+            Wednesday: "0803-1730" 
+            Thursday: "0804-1730" 
+            Friday: "0805-1730" 
+            Saturday: "0806-1730" 
+          }
+          Holidays: [["December 25, 2014"]]
+  
+        }
+      )
+      
+    expect(validateSchedule).toThrow("Schedule validation error: Holiday definition dates must be in the form yyyymmdd.")  
+  )
+  return
+)
+
 describe("BusinessDay", -> 
   businessDay = new BusinessDay(1, [["0800","1630"]])
 
@@ -15,7 +260,6 @@ describe("BusinessDay", ->
   )
   return
 )
-
 
 
 describe("DateRange Basic Properties", -> 
